@@ -82,10 +82,10 @@ def country_codes():
         return None
 
 
-def ralph_only(value, context):
-    if value and context['user'] != 'ralph':
-        raise Invalid('only ralph may set this value')
-    return value
+# def ralph_only(value, context):
+#     if value and context['user'] != 'ralph':
+#         raise Invalid('only ralph may set this value')
+#     return value
 
 
 class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
@@ -96,7 +96,7 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     # that allows us to update the CKAN config, in our case we want to
     # add an additional location for CKAN to look for templates.
     plugins.implements(plugins.IConfigurer)
-    plugins.implements(plugins.IValidators)
+    # plugins.implements(plugins.IValidators)
 
     # IConfigurer
     def update_config(self, config):
@@ -106,56 +106,44 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         #                      'extrafields')
         toolkit.add_template_directory(config, 'templates')
 
-        def _modify_package_schema(self, schema):
-            # Add our custom country_code metadata field to the schema.
-            schema.update({
-                'country_code': [toolkit.get_validator('ignore_missing'),
-                                 toolkit.get_converter('convert_to_tags')('country_codes')],
-                'capabilities':  [toolkit.get_validator('ignore_missing'),
-                                  toolkit.get_converter('convert_to_tags')('capabilities')]
-            })
-            # Add our custom_test metadata field to the schema, this one will use
-            # convert_to_extras instead of convert_to_tags.
-            schema.update({
-                'custom_text': [toolkit.get_validator('ignore_missing'),
-                                toolkit.get_converter('convert_to_extras')]
-            })
-            # Add our custom_resource_text metadata field to the schema
-            schema['resources'].update({
-                'custom_resource_text': [toolkit.get_validator('ignore_missing')]
-            })
-            return schema
+    def _modify_package_schema(self, schema):
+        # Add our custom_test metadata field to the schema, this one will use
+        # convert_to_extras instead of convert_to_tags.
+        schema.update({
+            'capabilities':  [toolkit.get_validator('ignore_missing'),
+                              toolkit.get_converter('convert_to_tags')('capabilities')],
+            'country_code': [
+                toolkit.get_converter('convert_to_tags')('country_codes'),
+                toolkit.get_validator('ignore_missing')]
+        })
+
+        return schema
+
+    def create_package_schema(self):
+        schema = super(ExtrafieldsPlugin, self).create_package_schema()
+        schema = self._modify_package_schema(schema)
+        return schema
+
+    def update_package_schema(self):
+        schema = super(ExtrafieldsPlugin, self).update_package_schema()
+        schema = self._modify_package_schema(schema)
+        return schema
 
     def show_package_schema(self):
         schema = super(ExtrafieldsPlugin, self).show_package_schema()
-        schema.update({
-            'custom_text': [toolkit.get_converter('convert_from_extras'),
-                            toolkit.get_validator('ignore_missing')]
-        })
 
-        # Don't show vocab tags mixed in with normal 'free' tags
-        # (e.g. on dataset pages, or on the search page)
-        schema['tags']['__extras'].append(
-            toolkit.get_converter('free_tags_only'))
-
-        # Add our custom country_code metadata field to the schema.
         schema.update({
-            'country_code': [
-                toolkit.get_converter('convert_from_tags')('country_codes'),
-                toolkit.get_validator('ignore_missing')],
             'capabilities':  [toolkit.get_validator('ignore_missing'),
-                              toolkit.get_converter('convert_to_tags')('capabilities')]
+                              toolkit.get_converter('convert_from_tags')('capabilities')],
+            'country_code': [
+                toolkit.get_converter(
+                      'convert_from_tags')('country_codes'),
+                toolkit.get_validator('ignore_missing')]
         })
 
-        # Add our custom_text field to the dataset schema.
-        schema.update({
-            'custom_text': [toolkit.get_converter('convert_from_extras'),
-                            toolkit.get_validator('ignore_missing')]
-        })
+        # schema['tags']['__extras'].append(
+        #     toolkit.get_converter('free_tags_only'))
 
-        schema['resources'].update({
-            'custom_resource_text': [toolkit.get_validator('ignore_missing')]
-        })
         return schema
 
     def is_fallback(self):
@@ -169,10 +157,10 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         return []
 
     # IValidators
-    def get_validators(self):
-        return {
-            u'ralph_only': ralph_only
-        }
+    # def get_validators(self):
+    #     return {
+    #         u'ralph_only': ralph_only
+    #     }
 
     plugins.implements(plugins.ITemplateHelpers)
 

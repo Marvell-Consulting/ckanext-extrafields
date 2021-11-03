@@ -17,7 +17,7 @@
       </select>
     </div>
   </div>
-
+  {#
   <div class="form-group">
     <label class="control-label" for="field-capability">{{ _("Capability") }}</label>
     <div class="controls">
@@ -28,17 +28,20 @@
       </select>
     </div>
   </div>
+  #}
   <!-- https://docs.ckan.org/en/2.9/contributing/frontend/templating.html?highlight=checkbox#form-checkbox -->
   {% import 'macros/form.html' as form %}
   <div class="form-group">
     <label class="control-label" for="field-capability">{{ _("Capabilities") }}</label>
     <div class="controls row">
       {% for capability in h.capabilities()  %}
+          {% set fid = "field-capability-"+capability %}
           {% if capability in data.get('capability', []) %}
             {% set is_checked = True %}
           {% endif %}
           {{ form.checkbox(
-              capability,
+              id=fid,
+              name='capability',
               label=capability,
               checked=is_checked,
               classes=["col-md-4"],
@@ -47,6 +50,23 @@
         }}
         {% endfor %}
       </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label" for="field-capability">{{ _("Custom written Capabilities") }}</label>
+    <div class="controls row">
+      {% for capability in [{'id': '_id'}] + h.capabilities()  %}
+      <label class="checkbox">
+        <input type="checkbox"
+            name="capabilities"
+            id="field-capabilities_{{ loop.index }}"
+            value="{{ capability }}"
+            {{ 'checked' if capability in data.get('capability', []) else '' }}
+            />
+        {{ capability }}
+      </label>
+      {% endfor %}
     </div>
   </div>
 
