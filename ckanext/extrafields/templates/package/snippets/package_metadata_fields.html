@@ -28,6 +28,27 @@
       </select>
     </div>
   </div>
+  <!-- https://docs.ckan.org/en/2.9/contributing/frontend/templating.html?highlight=checkbox#form-checkbox -->
+  {% import 'macros/form.html' as form %}
+  <div class="form-group">
+    <label class="control-label" for="field-capability">{{ _("Capabilities") }}</label>
+    <div class="controls row">
+      {% for capability in h.capabilities()  %}
+          {% if capability in data.get('capability', []) %}
+            {% set is_checked = True %}
+          {% endif %}
+          {{ form.checkbox(
+              capability,
+              label=capability,
+              checked=is_checked,
+              classes=["col-md-4"],
+              value=capability
+            )
+        }}
+        {% endfor %}
+      </select>
+    </div>
+  </div>
 
   {{ super() }}
 
