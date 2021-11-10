@@ -1,75 +1,46 @@
 {% ckan_extends %}
 
-{# You could remove 'free extras' from the package form like this, but we keep them for this example's tests.
-  {% block custom_fields %}
-  {% endblock %}
-#}
+{# You could remove 'free extras' from the package form like this, but we keep them for this example's tests. #}
+{% block custom_fields %}
+{% endblock %}
 
 {% block package_metadata_fields %}
+<div class="form-group">
+  <label class="control-label" for="field-capability">{{ _("Custom written Capabilities") }}</label>
+  <div class="controls row">
+    data.get('tags', [])<br />
+    {{ data.get('tags') }}
+    data
+    {{ data }}
+    <p></p>
+    ------------------
+    capabilities_selected
+    {{data.get('capabilities_selected')}}
+    <p></p>
+    ------------------
+    what
+    {{data.get('capabilities_what')}}
+    <p></p>
+    ------------------
+    c.vocab_info
+    {{c.vocab_info}}
+    <p></p>
+    ------------------
+    c.selected
+    {{c.selected}}
+    <p></p>
+    ------------------
 
-  <div class="form-group">
-    <label class="control-label" for="field-country_code">{{ _("Country Code") }}</label>
-    <div class="controls">
-      <select id="field-country_code" name="country_code" data-module="autocomplete">
-        {% for country_code in h.country_codes()  %}
-          <option value="{{ country_code }}" {% if country_code in data.get('country_code', []) %}selected="selected"{% endif %}>{{ country_code }}</option>
-        {% endfor %}
-      </select>
-    </div>
+    {% for capability in h.capabilities() %}
+    <label class="checkbox">
+      <input type="checkbox" name="capabilities" id="capabilities" value="{{ capability }}" {{ 'checked' if capability
+        in data.get('capabilities_what') else '' }} />
+      {{ capability }}
+    </label>
+    {% endfor %}
   </div>
-  {#
-  <div class="form-group">
-    <label class="control-label" for="field-capability">{{ _("Capability") }}</label>
-    <div class="controls">
-      <select id="field-capability" name="capability" data-module="autocomplete">
-        {% for capability in h.capabilities()  %}
-          <option value="{{ capability }}" {% if capability in data.get('capability', []) %}selected="selected"{% endif %}>{{ capability }}</option>
-        {% endfor %}
-      </select>
-    </div>
-  </div>
-  #}
-  <!-- https://docs.ckan.org/en/2.9/contributing/frontend/templating.html?highlight=checkbox#form-checkbox -->
-  {% import 'macros/form.html' as form %}
-  <div class="form-group">
-    <label class="control-label" for="field-capability">{{ _("Capabilities") }}</label>
-    <div class="controls row">
-      {% for capability in h.capabilities()  %}
-          {% set fid = "field-capability-"+capability %}
-          {% if capability in data.get('capability', []) %}
-            {% set is_checked = True %}
-          {% endif %}
-          {{ form.checkbox(
-              id=fid,
-              name='capability',
-              label=capability,
-              checked=is_checked,
-              classes=["col-md-4"],
-              value=capability
-            )
-        }}
-        {% endfor %}
-      </select>
-    </div>
-  </div>
+</div>
 
-  <div class="form-group">
-    <label class="control-label" for="field-capability">{{ _("Custom written Capabilities") }}</label>
-    <div class="controls row">
-      {% for capability in [{'id': '_id'}] + h.capabilities()  %}
-      <label class="checkbox">
-        <input type="checkbox"
-            name="capabilities"
-            id="field-capabilities_{{ loop.index }}"
-            value="{{ capability }}"
-            {{ 'checked' if capability in data.get('capability', []) else '' }}
-            />
-        {{ capability }}
-      </label>
-      {% endfor %}
-    </div>
-  </div>
-
-  {{ super() }}
+{{ super() }}
 
 {% endblock %}
