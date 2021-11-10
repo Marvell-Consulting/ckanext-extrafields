@@ -62,6 +62,7 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     plugins.implements(plugins.IConfigurer)
     # plugins.implements(plugins.IValidators)
 
+    # TODO: this can probably all go in favour of schema flow
     def setup_template_variables(self, context, data_dict=None):
         """
         Adds variables to c just prior to the template being rendered that can
@@ -72,16 +73,13 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             c.capability_tags = toolkit.get_action("tag_list")(
                 context, {"vocabulary_id": CAPABILITY_VOCAB}
             )
-            user = toolkit.get_action("get_site_user")({"ignore_auth": True}, {})
-            data = {"id": CAPABILITY_VOCAB}
-            context = {"user": user["name"]}
-            c.vocab_info = toolkit.get_action("vocabulary_show")(context, data)
-            c.selected = toolkit.get_action("tag_list")(
-                data_dict={"vocabulary_id": CAPABILITY_VOCAB, "state": "foovbar"}
-            )
+
+            c.vocab_info = toolkit.get_action("vocabulary_show")(
+                {}, {"id": CAPABILITY_VOCAB}
+            )["id"]
 
         except NotFound:
-            c.capability_tags = "nohit"
+            c.capability_tags = None
 
     # IConfigurer
     # This interface allows to implement a function update_config()
@@ -120,23 +118,26 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         schema = self._modify_package_schema(schema)
         return schema
 
+    # get stuff from the database and return it in a manner
+    # that is useful for the form
     def show_package_schema(self):
         schema = super(ExtrafieldsPlugin, self).show_package_schema()
-        # schema["tags"]["__extras"].append(toolkit.get_converter("free_tags_only"))
+        schema["tags"]["__extras"].append(toolkit.get_converter("free_tags_only"))
+
+        # get capabilities ID in order to filter tags
+        capability_vocab_id = toolkit.get_action("vocabulary_show")(
+            {}, {"id": CAPABILITY_VOCAB}
+        )["id"]
 
         schema.update(
             {
                 # this doesn't work (using vocab name)
                 "capabilities_selected": [
-                    toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_from_tags")(CAPABILITY_VOCAB),
-                ],
-                # this works
-                "capabilities_what": [
+                    # toolkit.get_validator("ignore_missing"),
                     toolkit.get_converter("convert_from_tags")(
-                        "469cbf59-9af8-4c54-853b-372201f86842"
+                        str(capability_vocab_id)
                     ),
-                ],
+                ]
             }
         )
 

@@ -8,6 +8,7 @@
 <div class="form-group">
   <label class="control-label" for="field-capability">{{ _("Custom written Capabilities") }}</label>
   <div class="controls row">
+    {# uncomment for lots of output
     data.get('tags', [])<br />
     {{ data.get('tags') }}
     data
@@ -30,11 +31,15 @@
     {{c.selected}}
     <p></p>
     ------------------
-
+    c.huh
+    {{c.huh}}
+    <p></p>
+    ------------------
+    #}
     {% for capability in h.capabilities() %}
     <label class="checkbox">
       <input type="checkbox" name="capabilities" id="capabilities" value="{{ capability }}" {{ 'checked' if capability
-        in data.get('capabilities_what') else '' }} />
+        in data.get('capabilities_selected',[]) else '' }} />
       {{ capability }}
     </label>
     {% endfor %}
