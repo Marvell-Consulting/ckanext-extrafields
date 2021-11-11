@@ -6,54 +6,11 @@ from ckan.logic import NotFound
 from ckan.common import c
 from ckan.lib.base import model
 
+from .helpers import capabilities, CAPABILITY_VOCAB
+
 toolkit = plugins.toolkit
 
 log = logging.getLogger(__name__)
-
-CAPABILITY_VOCAB = u"capabilities"
-
-
-def create_capabilities_tags():
-    capability_tags = [
-        u"Appointment or Scheduling",
-        u"Referrals",
-        u"Access to Records",
-        u"Clinical Decision Support",
-        u"Continuity of Care",
-        u"Demographics",
-        u"Key Care Information",
-        u"Medication Management",
-        u"Prescribing",
-        u"Dispensing",
-        u"Vaccination",
-        u"Messaging",
-        u"Patient Communication",
-        u"Reference Data",
-        u"Information Governance",
-        u"Security",
-        u"Tests and Diagnostics",
-    ]
-    user = toolkit.get_action("get_site_user")({"ignore_auth": True}, {})
-    context = {"user": user["name"]}
-    try:
-        data = {"id": CAPABILITY_VOCAB}
-        toolkit.get_action("vocabulary_show")(context, data)
-    except toolkit.ObjectNotFound:
-        data = {"name": "capabilities"}
-        vocab = toolkit.get_action("vocabulary_create")(context, data)
-        for tag in capability_tags:
-            data = {"name": tag, "vocabulary_id": CAPABILITY_VOCAB}
-            toolkit.get_action("tag_create")(context, data)
-
-
-def capabilities():
-    create_capabilities_tags()
-    try:
-        tag_list = toolkit.get_action("tag_list")
-        capability_tags = tag_list(data_dict={"vocabulary_id": CAPABILITY_VOCAB})
-        return capability_tags
-    except toolkit.ObjectNotFound:
-        return None
 
 
 class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
@@ -63,30 +20,29 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     # plugins.implements(plugins.IValidators)
 
     # TODO: this can probably all go in favour of schema flow
-    def setup_template_variables(self, context, data_dict=None):
-        """
-        Adds variables to c just prior to the template being rendered that can
-        then be used within the form
-        """
-        c.resource_columns = model.Resource.get_columns()
-        try:
-            c.capability_tags = toolkit.get_action("tag_list")(
-                context, {"vocabulary_id": CAPABILITY_VOCAB}
-            )
+    # def setup_template_variables(self, context, data_dict=None):
+    #     """
+    #     Adds variables to c just prior to the template being rendered that can
+    #     then be used within the form
+    #     """
+    #     c.resource_columns = model.Resource.get_columns()
+    # try:
+    #     c.capability_tags = toolkit.get_action("tag_list")(
+    #         context, {"vocabulary_id": CAPABILITY_VOCAB}
+    #     )
 
-            c.vocab_info = toolkit.get_action("vocabulary_show")(
-                {}, {"id": CAPABILITY_VOCAB}
-            )["id"]
+    #     c.vocab_info = toolkit.get_action("vocabulary_show")(
+    #         {}, {"id": CAPABILITY_VOCAB}
+    #     )["id"]
 
-        except NotFound:
-            c.capability_tags = None
+    # except NotFound:
+    #     c.capability_tags = None
 
     # IConfigurer
     # This interface allows to implement a function update_config()
     # that allows us to update the CKAN config, in our case we want to
     # add an additional location for CKAN to look for templates.
     def update_config(self, config):
-        # toolkit.add_template_directory(config_, 'templates')
         # toolkit.add_public_directory(config_, 'public')
         # toolkit.add_resource('fanstatic',
         #                      'extrafields')
@@ -131,12 +87,10 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
         schema.update(
             {
-                # this doesn't work (using vocab name)
                 "capabilities_selected": [
+                    # TODO: why does ignore_missing cut out selected capabilities?
                     # toolkit.get_validator("ignore_missing"),
-                    toolkit.get_converter("convert_from_tags")(
-                        str(capability_vocab_id)
-                    ),
+                    toolkit.get_converter("convert_from_tags")(CAPABILITY_VOCAB),
                 ]
             }
         )
