@@ -1,5 +1,9 @@
 from ckan.plugins.toolkit import get_action, ObjectNotFound
 
+
+user = get_action("get_site_user")({"ignore_auth": True}, {})
+context = {"user": user["name"]}
+
 CAPABILITY_VOCAB = u"capabilities"
 
 
@@ -23,8 +27,7 @@ def _create_capabilities_tags():
         u"Security",
         u"Tests and Diagnostics",
     ]
-    user = get_action("get_site_user")({"ignore_auth": True}, {})
-    context = {"user": user["name"]}
+
     try:
         data = {"id": CAPABILITY_VOCAB}
         get_action("vocabulary_show")(context, data)

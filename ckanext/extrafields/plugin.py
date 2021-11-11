@@ -17,31 +17,12 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     plugins.implements(plugins.IDatasetForm)
     plugins.implements(plugins.ITemplateHelpers)
     plugins.implements(plugins.IConfigurer)
-    # plugins.implements(plugins.IValidators)
-
-    # TODO: this can probably all go in favour of schema flow
-    # def setup_template_variables(self, context, data_dict=None):
-    #     """
-    #     Adds variables to c just prior to the template being rendered that can
-    #     then be used within the form
-    #     """
-    #     c.resource_columns = model.Resource.get_columns()
-    # try:
-    #     c.capability_tags = toolkit.get_action("tag_list")(
-    #         context, {"vocabulary_id": CAPABILITY_VOCAB}
-    #     )
-
-    #     c.vocab_info = toolkit.get_action("vocabulary_show")(
-    #         {}, {"id": CAPABILITY_VOCAB}
-    #     )["id"]
-
-    # except NotFound:
-    #     c.capability_tags = None
 
     # IConfigurer
     # This interface allows to implement a function update_config()
     # that allows us to update the CKAN config, in our case we want to
     # add an additional location for CKAN to look for templates.
+
     def update_config(self, config):
         # toolkit.add_public_directory(config_, 'public')
         # toolkit.add_resource('fanstatic',
@@ -81,9 +62,9 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         schema["tags"]["__extras"].append(toolkit.get_converter("free_tags_only"))
 
         # get capabilities ID in order to filter tags
-        capability_vocab_id = toolkit.get_action("vocabulary_show")(
-            {}, {"id": CAPABILITY_VOCAB}
-        )["id"]
+        # capability_vocab_id = toolkit.get_action("vocabulary_show")(
+        #     {}, {"id": CAPABILITY_VOCAB}
+        # )["id"]
 
         schema.update(
             {
