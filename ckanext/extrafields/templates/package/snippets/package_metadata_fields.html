@@ -6,46 +6,46 @@
 
 {% block package_metadata_fields %}
 <div class="form-group">
-  <label class="control-label" for="field-capability">{{ _("Custom written Capabilities") }}</label>
-  <div class="controls row">
-    {# uncomment for lots of output
-    data.get('tags', [])<br />
-    {{ data.get('tags') }}
-    data
-    {{ data }}
-    <p></p>
-    ------------------
-    capabilities_selected
-    {{data.get('capabilities_selected')}}
-    <p></p>
-    ------------------
-    what
-    {{data.get('capabilities_what')}}
-    <p></p>
-    ------------------
-    c.vocab_info
-    {{c.vocab_info}}
-    <p></p>
-    ------------------
-    c.selected
-    {{c.selected}}
-    <p></p>
-    ------------------
-    c.huh
-    {{c.huh}}
-    <p></p>
-    ------------------
-    #}
-    {% for capability in h.capabilities() %}
-    <label class="checkbox">
-      <input type="checkbox" name="capabilities" id="capabilities" value="{{ capability }}" {{ 'checked' if capability
-        in data.get('capabilities_selected',[]) else '' }} />
-      {{ capability }}
-    </label>
-    {% endfor %}
-  </div>
+  <label class="control-label" for="field-capability">{{ _("Capabilities") }}</label>
+  {% for capability in h.capabilities() %}
+  <label class="checkbox">
+    <input type="checkbox" name="capabilities" id="capabilities" value="{{ capability }}" {{ 'checked' if capability in
+      data.get('capabilities_selected',[]) else '' }} />
+    {{ capability }}
+  </label>
+  {% endfor %}
 </div>
 
 {{ super() }}
 
 {% endblock %}
+
+
+{# uncomment for lots of output
+data.get('tags', [])<br />
+{{ data.get('tags') }}
+data
+{{ data }}
+<p></p>
+------------------
+capabilities_selected
+{{data.get('capabilities_selected')}}
+<p></p>
+------------------
+what
+{{data.get('capabilities_what')}}
+<p></p>
+------------------
+c.vocab_info
+{{c.vocab_info}}
+<p></p>
+------------------
+c.selected
+{{c.selected}}
+<p></p>
+------------------
+c.huh
+{{c.huh}}
+<p></p>
+------------------
+#}

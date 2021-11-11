@@ -1,6 +1,19 @@
 {% ckan_extends %}
-{#
+
 {% block package_basic_fields_custom %}
-  {{ form.input('custom_text', label=_('Favourite Landgrave of Thuringia'), id='field-custom_text', placeholder=_('e.g. Louis III'), value=data.custom_text, error=errors.custom_text, classes=['control-medium']) }}
-{% endblock %}
+{#
+{{h}}
+{{h.statuses()}}
+{{c.status_tags}}
 #}
+<div class="form-group ">
+  <label for="field-lang-select">{{ _('Standard Status') }}</label>
+  <select id="field-lang-select" name="standard_status">
+    {% for status in h.statuses() %}
+    <option value="{{status}}" {% if status==current_status %}selected="selected" {% endif %}>
+      {{ status }}
+    </option>
+    {% endfor %}
+  </select>
+</div>
+{% endblock %}

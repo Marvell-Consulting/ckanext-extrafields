@@ -6,11 +6,12 @@ from ckan.logic import NotFound
 from ckan.common import c
 from ckan.lib.base import model
 
-from .helpers import capabilities, CAPABILITY_VOCAB
+from .helpers import capabilities, CAPABILITY_VOCAB, statuses, STATUS_VOCAB
 
 toolkit = plugins.toolkit
 
 log = logging.getLogger(__name__)
+statuses()
 
 
 class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
@@ -30,6 +31,20 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         toolkit.add_template_directory(config, "templates")
 
     # IDatasetForm
+    # TODO: this can probably all go in favour of schema flow
+    def setup_template_variables(self, context, data_dict=None):
+        """
+        Adds variables to c just prior to the template being rendered that can
+        then be used within the form
+        """
+        c.resource_columns = model.Resource.get_columns()
+        try:
+            c.status_tags = toolkit.get_action("tag_list")(
+                context, {"vocabulary_id": STATUS_VOCAB}
+            )
+
+        except NotFound:
+            c.capability_tags = None
 
     def _modify_package_schema(self, schema):
         # Add our custom_test metadata field to the schema, this one will use
@@ -39,7 +54,11 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                 "capabilities": [
                     toolkit.get_validator("ignore_missing"),
                     toolkit.get_converter("convert_to_tags")(CAPABILITY_VOCAB),
-                ]
+                ],
+                "standard_status": [
+                    toolkit.get_validator("ignore_missing"),
+                    toolkit.get_converter("convert_to_tags")(STATUS_VOCAB),
+                ],
             }
         )
 
@@ -72,7 +91,10 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                     # TODO: why does ignore_missing cut out selected capabilities?
                     # toolkit.get_validator("ignore_missing"),
                     toolkit.get_converter("convert_from_tags")(CAPABILITY_VOCAB),
-                ]
+                ],
+                "current_status": [
+                    toolkit.get_converter("convert_from_tags")(STATUS_VOCAB),
+                ],
             }
         )
 
@@ -91,4 +113,4 @@ class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     # ITemplateHelpers
 
     def get_helpers(self):
-        return {"capabilities": capabilities}
+        return {"capabilities": capabilities, "statuses": statuses}
