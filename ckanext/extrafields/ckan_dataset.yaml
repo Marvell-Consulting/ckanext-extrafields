@@ -1,0 +1,187 @@
+scheming_version: 2
+dataset_type: dataset
+about: A reimplementation of the default CKAN dataset schema
+about_url: http://github.com/ckan/ckanext-scheming
+
+dataset_fields:
+  - field_name: title
+    label: Title
+    preset: title
+    form_placeholder: eg. Summary Care Record - FHIR API
+    required: true
+
+  - field_name: name
+    label: URL
+    preset: dataset_slug
+    form_placeholder: eg. my-dataset
+
+  - field_name: notes
+    label: Description
+    form_snippet: markdown.html
+    form_placeholder: A short description of the data or standard, e.g "Access patient's Summary Care Record (SCR), an electronic record of important patient information, using our FHIR API."
+
+  - field_name: status
+    label: Status of Standard
+    required: true
+    preset: select
+    choices:
+      - value: active
+        label: Active
+      - value: draft
+        label: Draft
+      - value: deprecated
+        label: Deprecated
+      - value: retired
+        label: Retired
+
+  - field_name: approval_code
+    label: Approval Code
+    form_placeholder: e.g. ISB0000
+
+  - field_name: dependencies
+    label: Dependencies
+    help_text: Any standards or services (e.g. SNOMED CT or the Patient Administration System) that must be implemented in order for this standard to work
+    form_placeholder: e.g. SNOMED
+
+  - field_name: related_standards
+    label: Related Standards
+    help_text: List any related standards e.g. if the standard forms part of a broader package that users may wish to implement together
+    form_placeholder: e.g. NHS Number, HA/GP Links
+
+  - field_name: standard_type
+    label: Type of Standard
+    required: true
+    preset: select
+    choices:
+      - value: active
+        label: Information Code Of Practice & Governance Standard
+      - value: draft
+        label: Record Standard
+      - value: deprecated
+        label: Data Definitions & Terminologies
+      - value: retired
+        label: Technical Standard
+
+  - field_name: care_setting
+    label: Care Setting
+    preset: multiple_checkbox
+    choices:
+      - value: community_health
+        label: Community health
+      - value: dentistry
+        label: Dentistry
+      - value: hospital
+        label: Hospital
+      - value: maternity
+        label: Maternity
+      - value: mental_health
+        label: Mental Health
+      - value: patient_citizen
+        label: Patient / Citizen
+      - value: pharmacy
+        label: Pharmacy
+      - value: gp_primary care
+        label: GP / Primary Care
+      - value: transport_infrastructure social care
+        label: Transport, Infrastructure, and Social care
+      - value: urgent_and_mergency_care
+        label: Urgent And Emergency Care
+
+  - field_name: procedure
+    label: Procedure
+    preset: multiple_checkbox
+    choices:
+      - value: administration_bookings
+        label: Administration and bookings (Registrations, Appointments, Admissions and discharges, Referrals)
+      - value: medication
+        label: Medication management (Prescribing, Dispensing, Vaccination)
+      - value: communications
+        label: Messaging and notices (Communications between care providers, Communications with patients)
+      - value: patient_info
+        label: Patient information management (Records management, Demographics data, Information sharing Reference data and directories)
+      - value: security
+        label: Security (Secure logins, Electronic signatures, Identity verification and Cyber security alert feeds.)
+
+  # Requires datastore and datapusher
+  # see e.g.https://github.com/okfn/docker-ckan-lacounts/commit/c5e750c0
+  # and https://docs.ckan.org/en/2.9/maintaining/datastore.html
+  # - field_name: notsure
+  #   label: What is datastore choices
+  #   preset: select
+  #   choices_helper: scheming_datastore_choices
+  #   datastore_choices_resource: countries-resource-id-or-alias
+  #   datastore_choices_columns:
+  #     - value: Country Code
+  #       label: English Country Name
+  #   datastore_additional_choices:
+  #     - value: none
+  #       label: None
+  #     - value: na
+  #       label: N/A
+
+  # - field_name: tag_string
+  #   label: Tags
+  #   preset: tag_string_autocomplete
+  #   form_placeholder: eg. economy, mental health, government
+
+  # - field_name: license_id
+  #   label: License
+  #   form_snippet: license.html
+  #   help_text: License definitions and additional information can be found at http://opendefinition.org/
+
+  - field_name: owner_org
+    label: Organization
+    preset: dataset_organization
+
+  - field_name: url
+    label: Source
+    form_placeholder: http://example.com/dataset.json
+    display_property: foaf:homepage
+    display_snippet: link.html
+
+  # - field_name: version
+  #   label: Version
+  #   validators: ignore_missing unicode package_version_validator
+  #   form_placeholder: '1.0'
+
+  - field_name: author
+    label: Author
+    form_placeholder: Joe Bloggs
+    display_property: dc:creator
+
+  - field_name: author_email
+    label: Author Email
+    form_placeholder: joe@example.com
+    display_property: dc:creator
+    display_snippet: email.html
+    display_email_name_field: author
+
+  - field_name: maintainer
+    label: Maintainer
+    form_placeholder: Joe Bloggs
+    display_property: dc:contributor
+
+  - field_name: maintainer_email
+    label: Maintainer Email
+    form_placeholder: joe@example.com
+    display_property: dc:contributor
+    display_snippet: email.html
+    display_email_name_field: maintainer
+
+resource_fields:
+  - field_name: url
+    label: URL
+    preset: resource_url_upload
+
+  - field_name: name
+    label: Name
+    form_placeholder: eg. January 2011 Gold Prices
+
+  - field_name: description
+    label: Description
+    form_snippet: markdown.html
+    form_placeholder: Some useful notes about the data
+
+  - field_name: format
+    label: Format
+    preset: resource_format_autocomplete
