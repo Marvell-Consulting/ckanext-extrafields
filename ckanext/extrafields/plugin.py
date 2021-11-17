@@ -6,16 +6,17 @@ from ckan.logic import NotFound
 from ckan.common import c
 from ckan.lib.base import model
 
-from .helpers import capabilities, CAPABILITY_VOCAB, statuses, STATUS_VOCAB
+# from .helpers import capabilities, CAPABILITY_VOCAB, statuses, STATUS_VOCAB
 
 toolkit = plugins.toolkit
 
 log = logging.getLogger(__name__)
-statuses()
+# statuses()
 
 
 class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     True
+
 
 # class ExtrafieldsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 #     plugins.implements(plugins.IDatasetForm)
